@@ -12,23 +12,12 @@ const SudokuGame: React.FC = () => {
     );
 
     const changeCellValue = (newCellValue: SudokuCell, cellNumber: number) => {
-        console.log(newCellValue, cellNumber)
-        const [newCellRow, newCellCol] =
-            SudokuGridMapper.getCellRowAndColumn(cellNumber);
-        console.log(newCellRow, newCellCol);
-        setGrid((prevGrid) =>
-            prevGrid.map((row, oldCellRow) =>
-                row.map((oldCellValue, oldCellCol) => {
-                    if (
-                        oldCellRow === newCellRow &&
-                        oldCellCol === newCellCol
-                    ) {
-                        return newCellValue;
-                    }
-                    return oldCellValue;
-                })
-            )
-        );
+        const [row, col] = SudokuGridMapper.getCellRowAndColumn(cellNumber);
+        setGrid((prevGrid) => {
+            const updatedGrid = prevGrid.map((row) => [...row]);
+            updatedGrid[row][col] = newCellValue;
+            return updatedGrid;
+        });
     };
 
     return (
