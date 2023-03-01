@@ -1,55 +1,92 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import styles from "./index.module.css";
 
 import SudokuGridModel from "../models/SudokuGrid";
 import SudokuCell from "../models/SudokuCell";
 
-import { validCellValues, getCellRowAndColumnFromId } from "../utils/utilities";
+import { sliceIntoChunks, validCellValues } from "../utils/utilities";
 
 const SudokuGrid: React.FC<{
     grid: SudokuGridModel;
     onCellChange: (
-        cellValue: SudokuCell,
-        cellRow: number,
-        cellCol: number
+        newCellValue: SudokuCell,
+        cellNumber: number
     ) => void;
 }> = ({ grid, onCellChange }) => {
-    const cellChangeHandler = (event: ChangeEvent) => {
-        const value = (event.target as HTMLInputElement).value as SudokuCell;
-        if (!validCellValues.includes(value)) {
+
+    const cellChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value as SudokuCell;
+        if(!validCellValues.includes(value)) {
             return;
         }
-        const [cellRow, cellCol] = getCellRowAndColumnFromId(event.target.id);
-        onCellChange(value, cellRow, cellCol);
+        const cellNumber = +event.target.id.substring(5);
+        onCellChange(value, cellNumber);
+    }
+
+    const colGroups = () => {
+        const colGroups = [];
+        for (let i = 0; i < 3; i++) {
+            const cols = [];
+            for (let j = 0; j < 3; j++) {
+                const colNumber = 3 * i + j;
+                cols.push(
+                    <col
+                        className={`col col-${colNumber}`}
+                        key={`col-${colNumber}`}
+                    />
+                );
+            }
+            const colGroup = (
+                <colgroup key={`region-col-${i}`} className={`region-col-${i} ${styles.colgroup}`}>
+                    {cols}
+                </colgroup>
+            );
+            colGroups.push(colGroup);
+        }
+        return colGroups;
+    };
+
+    const tableBody = () => {
+        const tBodies = sliceIntoChunks(grid, 3) as any[][][];
+        return tBodies.map((tBody, tBodyIndex) => (
+            // A tbody represents 3 rows
+            <tbody
+                key={`region-row-${tBodyIndex}`}
+                className={`region-row-${tBodyIndex} ${styles.tbody}`}
+            >
+                {tBody.map((tableRow, tableRowIndex) => {
+                    const gridRowIndex = 3 * tBodyIndex + tableRowIndex;
+                    return (
+                        <tr
+                            key={`row-${gridRowIndex}`}
+                            className={`row-${gridRowIndex}`}
+                        >
+                            {tableRow.map((cell, cellIndex) => {
+                                const cellNumber = gridRowIndex * 9 + cellIndex;
+                                return (
+                                    <td key={`cell-${cellNumber}`}>
+                                        <input
+                                            id={`cell-${cellNumber}`}
+                                            className={`${styles.td}`}
+                                            type='text'
+                                            value={cell}
+                                            onChange={cellChangeHandler}
+                                        />
+                                    </td>
+                                );
+                            })}
+                        </tr>
+                    );
+                })}
+            </tbody>
+        ));
     };
 
     return (
-        <div className={styles["sudoku-grid"]}>
-            {grid.map((col, colIndex) => (
-                <div
-                    key={`col-${colIndex}`}
-                    className={`${styles.col} ${"col-" + colIndex}`}
-                >
-                    {col.map((cell, cellIndex) => {
-                        const cellNum = 9 * colIndex + cellIndex;
-                        const rowNumber = cellIndex % 9;
-                        const className = `${styles.cell} ${styles.row} ${
-                            "row-" + rowNumber
-                        }`;
-                        return (
-                            <div key={`cell-${cellNum}`} className={className}>
-                                <input
-                                    type="text"
-                                    value={cell}
-                                    id={`cell-${cellNum}`}
-                                    onChange={cellChangeHandler}
-                                />
-                            </div>
-                        );
-                    })}
-                </div>
-            ))}
-        </div>
+        <table className={styles.table}>
+            {colGroups()}
+            {tableBody()}
+        </table>
     );
 };
 

@@ -1,31 +1,24 @@
 @charset "UTF-8";
 
-.sudoku-grid {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    height: 170px;
-    width: 200px;
+.table {
+    border-collapse: collapse;
+    font-family: Calibri, sans-serif;
 }
 
-.row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+.colgroup,
+.tbody {
+    border: solid medium;
 }
 
-.col {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    width: 100%;
+.redcolgroup {
+    border: solid medium red;
 }
 
-.cell input {
-    width: 100%;
+.td {
+    font-size: 1.5rem;
+    border: solid thin;
+    height: 2em;
+    width: 2em;
     text-align: center;
-    margin: 0px;
+    padding: 0;
 }

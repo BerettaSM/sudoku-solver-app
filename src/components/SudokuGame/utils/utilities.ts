@@ -13,9 +13,11 @@ export const validCellValues: SudokuCell[] = [
     "9",
 ];
 
-export const getCellRowAndColumnFromId = (id: string) => {
-    const cellNum = +id.substring(5);
-    const row = cellNum % 9;
-    const col = Math.floor(cellNum / 9);
-    return [row, col];
-};
+export function sliceIntoChunks(array: any[], chunkSize: number) {
+    const result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+        const chunk = array.slice(i, i + chunkSize);
+        result.push(chunk);
+    }
+    return result;
+}

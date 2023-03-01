@@ -4,20 +4,25 @@ import SudokuGrid from "./SudokuGrid";
 import SudokuGridModel from "./models/SudokuGrid";
 import SudokuCell from "./models/SudokuCell";
 
+import SudokuGridMapper from "./utils/SudokuGridMapper";
+
 const SudokuGame: React.FC = () => {
     const [grid, setGrid] = useState<SudokuGridModel>(
         Array(9).fill(Array(9).fill(""))
     );
 
-    const changeCellValue = (
-        newCellValue: SudokuCell,
-        cellRow: number,
-        cellCol: number
-    ) => {
+    const changeCellValue = (newCellValue: SudokuCell, cellNumber: number) => {
+        console.log(newCellValue, cellNumber)
+        const [newCellRow, newCellCol] =
+            SudokuGridMapper.getCellRowAndColumn(cellNumber);
+        console.log(newCellRow, newCellCol);
         setGrid((prevGrid) =>
-            prevGrid.map((col, colIndex) =>
-                col.map((oldCellValue, cellIndex) => {
-                    if (colIndex === cellCol && cellIndex === cellRow) {
+            prevGrid.map((row, oldCellRow) =>
+                row.map((oldCellValue, oldCellCol) => {
+                    if (
+                        oldCellRow === newCellRow &&
+                        oldCellCol === newCellCol
+                    ) {
                         return newCellValue;
                     }
                     return oldCellValue;
@@ -30,6 +35,13 @@ const SudokuGame: React.FC = () => {
         <div>
             <h3>Sudoku Solver</h3>
             <SudokuGrid grid={grid} onCellChange={changeCellValue} />
+
+            {/*
+            <button>Clear</button><br/>
+            <button>Generate</button><br/>
+            <button>Solve puzzle</button><br/>
+             */}
+            {/* Game must be evaluated for conflicts after every input */}
         </div>
     );
 };
