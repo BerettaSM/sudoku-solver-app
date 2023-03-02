@@ -11,6 +11,8 @@ const SudokuGame: React.FC = () => {
         Array(9).fill(Array(9).fill(""))
     );
 
+    // Sudoku solver class goes on this component
+
     const changeCellValue = (newCellValue: SudokuCell, cellNumber: number) => {
         const [row, col] = SudokuGridMapper.getCellRowAndColumn(cellNumber);
         setGrid((prevGrid) => {
@@ -19,7 +21,7 @@ const SudokuGame: React.FC = () => {
             return updatedGrid;
         });
     };
-
+    console.log(grid)
     return (
         <div>
             <h3>Sudoku Solver</h3>

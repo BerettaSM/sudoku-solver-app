@@ -22,7 +22,7 @@ class SudokuGridMapper {
         return [this.getCellRow(cellNumber), this.getCellColumn(cellNumber)];
     };
 
-     /* 
+    /* 
         There are 9 regions, each with a row and column.
     
           0  1  2  regionCol
@@ -34,12 +34,11 @@ class SudokuGridMapper {
 
     static getCellRegionRow = (cellNumber: number) => {
         const cellRow = this.getCellRow(cellNumber);
-        return Math.floor(cellRow / 3);
+        return this.transformCellRowToRegionRow(cellRow);
     };
 
     static getCellRegionColumn = (cellNumber: number) => {
-        const cellCol = this.getCellColumn(cellNumber);
-        return Math.floor(cellCol / 3);
+        return this.getCellRegionRow(cellNumber);
     };
 
     static getCellRegion = (cellNumber: number) => {
@@ -48,6 +47,18 @@ class SudokuGridMapper {
             col: this.getCellRegionColumn(cellNumber),
         };
     };
+
+    static transformCellRowToRegionRow = (cellRow: number) => {
+        return Math.floor(cellRow / 3);
+    }
+
+    static transformCellColumnToRegionColumn = (cellColumn: number) => {
+        return this.transformCellRowToRegionRow(cellColumn);
+    }
+
+    static transformCellRowAndColumnToNumber = (cellRow: number, cellColumn: number) => {
+        return cellRow * 9 + cellColumn;
+    }
 
     static getCellInfo = (cellNumber: number) => {
         return {

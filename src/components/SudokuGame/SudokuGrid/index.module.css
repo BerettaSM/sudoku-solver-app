@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-.table {
+/* .table {
     border-collapse: collapse;
     font-family: Calibri, sans-serif;
 }
@@ -8,17 +8,35 @@
 .colgroup,
 .tbody {
     border: solid medium;
+} */
+
+.sudoku-grid {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
 }
 
-.redcolgroup {
-    border: solid medium red;
+.region-row {
+    display: flex;
+    flex-direction: row;
 }
 
-.td {
+.region {
+    display: flex;
+    flex-wrap: wrap;
+    border: 2px solid black;
+}
+
+.cell {
+    flex-basis: 33.3333333%;
     font-size: 1.5rem;
     border: solid thin;
     height: 2em;
-    width: 2em;
+    width: 0.6667em;
     text-align: center;
     padding: 0;
+}
+
+input[type="text"]:focus {
+    outline: none;
 }

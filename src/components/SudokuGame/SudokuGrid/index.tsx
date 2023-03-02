@@ -5,23 +5,20 @@ import SudokuGridModel from "../models/SudokuGrid";
 import SudokuCell from "../models/SudokuCell";
 
 import { sliceIntoChunks, validCellValues } from "../utils/utilities";
+import Mapper from "../utils/SudokuGridMapper";
 
 const SudokuGrid: React.FC<{
     grid: SudokuGridModel;
-    onCellChange: (
-        newCellValue: SudokuCell,
-        cellNumber: number
-    ) => void;
+    onCellChange: (newCellValue: SudokuCell, cellNumber: number) => void;
 }> = ({ grid, onCellChange }) => {
-
     const cellChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value as SudokuCell;
-        if(!validCellValues.includes(value)) {
+        if (!validCellValues.includes(value)) {
             return;
         }
         const cellNumber = +event.target.id.substring(5);
         onCellChange(value, cellNumber);
-    }
+    };
 
     const colGroups = () => {
         const colGroups = [];
@@ -37,7 +34,10 @@ const SudokuGrid: React.FC<{
                 );
             }
             const colGroup = (
-                <colgroup key={`region-col-${i}`} className={`region-col-${i} ${styles.colgroup}`}>
+                <colgroup
+                    key={`region-col-${i}`}
+                    className={`region-col-${i} ${styles.colgroup}`}
+                >
                     {cols}
                 </colgroup>
             );
@@ -47,7 +47,7 @@ const SudokuGrid: React.FC<{
     };
 
     const tableBody = () => {
-        const tBodies = sliceIntoChunks(grid, 3) as any[][][];
+        const tBodies = sliceIntoChunks(grid, 3) as SudokuCell[][][];
         return tBodies.map((tBody, tBodyIndex) => (
             // A tbody represents 3 rows
             <tbody
@@ -68,7 +68,8 @@ const SudokuGrid: React.FC<{
                                         <input
                                             id={`cell-${cellNumber}`}
                                             className={`${styles.td}`}
-                                            type='text'
+                                            type="text"
+                                            autoComplete="off"
                                             value={cell}
                                             onChange={cellChangeHandler}
                                         />
@@ -82,11 +83,67 @@ const SudokuGrid: React.FC<{
         ));
     };
 
+    const sudokuGridBody = () => {
+        const regions: [string, number][][][] = [...Array(3)].map((_) => [
+            [],
+            [],
+            [],
+        ]);
+        grid.forEach((row, rowIndex) => {
+            row.forEach((cellValue, colIndex) => {
+                const regionRow = Mapper.transformCellRowToRegionRow(rowIndex);
+                const regionCol =
+                    Mapper.transformCellColumnToRegionColumn(colIndex);
+                const cellNumber = Mapper.transformCellRowAndColumnToNumber(
+                    rowIndex,
+                    colIndex
+                );
+                regions[regionRow][regionCol].push([cellValue, cellNumber]);
+            });
+        });
+        return (
+            <>
+                {regions.map((regionRow, regionRowIndex) => {
+                    return (
+                        <div
+                            key={`region-row-${regionRowIndex}`}
+                            className={styles["region-row"]}
+                        >
+                            {regionRow.map((region, regionIndex) => {
+                                const regionNumber =
+                                    regionRowIndex * 3 + regionIndex;
+                                return (
+                                    <div
+                                        key={`region-${regionNumber}`}
+                                        className={styles.region}
+                                    >
+                                        {region.map(([cell, cellNumber]) => (
+                                            <input
+                                                key={`cell-${cellNumber}`}
+                                                id={`cell-${cellNumber}`}
+                                                className={`${styles.cell}`}
+                                                type="text"
+                                                autoComplete="off"
+                                                value={cell}
+                                                onChange={cellChangeHandler}
+                                            />
+                                        ))}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    );
+                })}
+            </>
+        );
+    };
+
     return (
-        <table className={styles.table}>
-            {colGroups()}
-            {tableBody()}
-        </table>
+        // <table className={styles.table}>
+        //     {colGroups()}
+        //     {tableBody2()}
+        // </table>
+        <div className={styles["sudoku-grid"]}>{sudokuGridBody()}</div>
     );
 };
 
