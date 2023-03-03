@@ -1,34 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 
 import SudokuGrid from "./SudokuGrid";
-import SudokuGridModel from "./models/SudokuGrid";
-import SudokuCell from "./models/SudokuCell";
-
-import SudokuGridMapper from "./utils/SudokuGridMapper";
+import useSudoku from "./hooks/use-sudoku";
 
 const SudokuGame: React.FC = () => {
-    const [grid, setGrid] = useState<SudokuGridModel>(
-        Array(9).fill(Array(9).fill(""))
-    );
+    const { grid, conflicts, changeCell, clearGrid } = useSudoku();
 
-    // Sudoku solver class goes on this component
-
-    const changeCellValue = (newCellValue: SudokuCell, cellNumber: number) => {
-        const [row, col] = SudokuGridMapper.getCellRowAndColumn(cellNumber);
-        setGrid((prevGrid) => {
-            const updatedGrid = prevGrid.map((row) => [...row]);
-            updatedGrid[row][col] = newCellValue;
-            return updatedGrid;
-        });
-    };
-    console.log(grid)
     return (
         <div>
             <h3>Sudoku Solver</h3>
-            <SudokuGrid grid={grid} onCellChange={changeCellValue} />
+            <SudokuGrid grid={grid} conflicts={conflicts} onCellChange={changeCell} />
 
+            <button onClick={clearGrid}>Clear</button>
+            <br />
             {/*
-            <button>Clear</button><br/>
             <button>Generate</button><br/>
             <button>Solve puzzle</button><br/>
              */}

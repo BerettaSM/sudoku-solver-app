@@ -1,15 +1,5 @@
 @charset "UTF-8";
 
-/* .table {
-    border-collapse: collapse;
-    font-family: Calibri, sans-serif;
-}
-
-.colgroup,
-.tbody {
-    border: solid medium;
-} */
-
 .sudoku-grid {
     display: flex;
     flex-direction: column;
@@ -27,7 +17,11 @@
     border: 2px solid black;
 }
 
-.cell {
+.conflicted-region {
+    border: 2px solid red;
+}
+
+input.cell {
     flex-basis: 33.3333333%;
     font-size: 1.5rem;
     border: solid thin;
@@ -35,8 +29,9 @@
     width: 0.6667em;
     text-align: center;
     padding: 0;
+    outline: none;
 }
 
-input[type="text"]:focus {
-    outline: none;
+input.red-bordered-cell {
+    border: solid 1px red;
 }

@@ -1,27 +1,7 @@
+import SudokuCell from "../models/SudokuCell";
+import SudokuGrid from "../models/SudokuGrid";
+
 class SudokuGridMapper {
-    /*
-        The logic that calculates cells rows, columns and regions
-        assumes that a cell number is assigned first top to bottom,
-        then left to right. e.g.: First column has cells 0-8, second
-        column has cells 9-17, and so on.
-    */
-
-    static getCellColumn = (cellNumber: number) => {
-        return cellNumber % 9;
-    };
-
-    static getCellRow = (cellNumber: number) => {
-        return Math.floor(cellNumber / 9);
-    };
-
-    static getCellRowAndColumn = (cellNumber: number) => {
-        /*
-            id is assigned as "cell-01",
-            we're interested on the number.
-        */
-        return [this.getCellRow(cellNumber), this.getCellColumn(cellNumber)];
-    };
-
     /* 
         There are 9 regions, each with a row and column.
     
@@ -32,40 +12,72 @@ class SudokuGridMapper {
         regionRow
     */
 
-    static getCellRegionRow = (cellNumber: number) => {
-        const cellRow = this.getCellRow(cellNumber);
-        return this.transformCellRowToRegionRow(cellRow);
-    };
-
-    static getCellRegionColumn = (cellNumber: number) => {
-        return this.getCellRegionRow(cellNumber);
-    };
-
-    static getCellRegion = (cellNumber: number) => {
-        return {
-            row: this.getCellRegionRow(cellNumber),
-            col: this.getCellRegionColumn(cellNumber),
-        };
-    };
-
-    static transformCellRowToRegionRow = (cellRow: number) => {
+    static findRegionRow = (cellRow: number) => {
         return Math.floor(cellRow / 3);
-    }
+    };
 
-    static transformCellColumnToRegionColumn = (cellColumn: number) => {
-        return this.transformCellRowToRegionRow(cellColumn);
-    }
+    static findRegionCol = (cellColumn: number) => {
+        return this.findRegionRow(cellColumn);
+    };
 
-    static transformCellRowAndColumnToNumber = (cellRow: number, cellColumn: number) => {
-        return cellRow * 9 + cellColumn;
-    }
-
-    static getCellInfo = (cellNumber: number) => {
-        return {
-            row: this.getCellRow(cellNumber),
-            col: this.getCellColumn(cellNumber),
-            region: this.getCellRegion(cellNumber),
+    static getRegionIndexes = (rowNumber: number, colNumber: number) => {
+        const regionRow = this.findRegionRow(rowNumber);
+        const regionCol = this.findRegionCol(colNumber);
+        const region: { rows: number[]; cols: number[] } = {
+            rows: [],
+            cols: [],
         };
+        for (let i = 0; i < 3; i++) {
+            region.rows.push(regionRow * 3 + i);
+            region.cols.push(regionCol * 3 + i);
+        }
+        return region;
+    };
+
+    static findRegionIndex = (cellRow: number, cellCol: number) => {
+        const regionRow = this.findRegionRow(cellRow);
+        const regionCol = this.findRegionCol(cellCol);
+        return regionRow * 3 + regionCol;
+    };
+
+    static extractColumnFromGrid = (grid: SudokuGrid, colNumber: number) => {
+        return grid.reduce(
+            (column, currentRow) => [...column, currentRow[colNumber]],
+            []
+        );
+    };
+
+    static extractRegionFromGrid = (
+        grid: SudokuGrid,
+        rowNumber: number,
+        colNumber: number
+    ) => {
+        const region: SudokuCell[] = [];
+        const { rows, cols } = this.getRegionIndexes(rowNumber, colNumber);
+        rows.forEach((row) => {
+            cols.forEach((col) => {
+                region.push(grid[row][col]);
+            });
+        });
+        return region;
+    };
+
+    static divideIntoRegions = (grid: SudokuGrid) => {
+        const regions: [SudokuCell, number, number][][][] = [...Array(3)].map(
+            (_) => [[], [], []]
+        );
+        grid.forEach((row, rowIndex) => {
+            row.forEach((cellValue, colIndex) => {
+                const regionRow = this.findRegionRow(rowIndex);
+                const regionCol = this.findRegionCol(colIndex);
+                regions[regionRow][regionCol].push([
+                    cellValue,
+                    rowIndex,
+                    colIndex,
+                ]);
+            });
+        });
+        return regions;
     };
 }
 

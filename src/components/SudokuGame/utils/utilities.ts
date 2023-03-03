@@ -1,4 +1,7 @@
+import SudokuGrid from "../models/SudokuGrid";
 import SudokuCell from "../models/SudokuCell";
+
+export const getClearGrid = (): SudokuGrid => Array(9).fill(Array(9).fill(""));
 
 export const validCellValues: SudokuCell[] = [
     "",
@@ -12,12 +15,3 @@ export const validCellValues: SudokuCell[] = [
     "8",
     "9",
 ];
-
-export function sliceIntoChunks(array: any[], chunkSize: number) {
-    const result = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-        const chunk = array.slice(i, i + chunkSize);
-        result.push(chunk);
-    }
-    return result;
-}
