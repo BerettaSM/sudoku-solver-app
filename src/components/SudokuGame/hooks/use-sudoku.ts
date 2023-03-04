@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 
 import { SudokuCell, SudokuGrid } from "../models/Sudoku";
+import { Conflicts, getConflictsObject } from "../models/Conflicts";
+
 import Solver from "../utils/SudokuSolver";
 import { getClearGrid } from "../utils/utilities";
-import { Conflicts, getConflictsObject } from "../models/Conflicts";
 
 const useSudoku = () => {
     const [grid, setGrid] = useState<SudokuGrid>(getClearGrid());
@@ -11,7 +12,7 @@ const useSudoku = () => {
     const [conflicts, setConflicts] = useState<Conflicts>(getConflictsObject());
 
     useEffect(() => {
-        const updatedConflicts = Solver.getConflicts(grid);
+        const updatedConflicts = Solver.getAllConflicts(grid);
         setConflicts(updatedConflicts);
     }, [grid])
 
@@ -32,19 +33,19 @@ const useSudoku = () => {
         setConflicts(getConflictsObject());
     };
 
-    const isSolvable = Object.entries(conflicts).reduce((isSolvable, [key, arr]) => {
-        if(key === 'regions') {
-            return (arr as number[][]).every(a => a.length === 0) && isSolvable;
-        } else {
-            return arr.length === 0 && isSolvable;
-        }
-    }, true);
+    const solvePuzzle = () => {
+        const solution = Solver.solve(grid);
+        setGrid(solution);
+    }
 
+    const isSolvable = !Solver.puzzleHasConflicts(conflicts) && !Solver.isGridFullySet(grid);
+    
     return {
         grid,
         conflicts,
         changeCell,
         clearGrid,
+        solvePuzzle,
         isSolvable
     };
 };

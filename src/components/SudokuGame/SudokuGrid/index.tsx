@@ -1,6 +1,8 @@
 import React, { memo } from "react";
 import styles from "./index.module.css";
 
+import SudokuRegion from "./SudokuRegion";
+
 import { SudokuCell, SudokuGrid as SudokuGridModel } from "../models/Sudoku";
 import { Conflicts } from "../models/Conflicts";
 
@@ -14,7 +16,7 @@ const SudokuGrid: React.FC<{
 }> = ({ grid, conflicts, onCellChange }) => {
     const cellChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value as SudokuCell;
-        if (!validCellValues.includes(value)) {
+        if (!validCellValues.includes(value) && value !== '') {
             return;
         }
         const cellId = event.target.id;
@@ -26,7 +28,7 @@ const SudokuGrid: React.FC<{
     /*
         Mainly so regions can be grouped in separate divs and styled.
     */
-    const fullGrid = Mapper.extractRegionsFromGrid(grid);
+    const fullGrid = Mapper.extractAllRegionsFromGrid(grid);
 
     return (
         <div className={styles["sudoku-grid"]}>
@@ -48,44 +50,13 @@ const SudokuGrid: React.FC<{
                                     : null
                             }`;
                             return (
-                                <div
+                                <SudokuRegion
                                     key={`region-${regionId}`}
-                                    className={regionClasses}
-                                >
-                                    {region.map(([cell, row, col]) => {
-                                        const cellNumber = `${row}${col}`;
-                                        const cellId = `rc-${cellNumber}`;
-                                        const cellRowHasConflict =
-                                            conflicts.rows.includes(row);
-                                        const cellColHasConflict =
-                                            conflicts.cols.includes(col);
-                                        const cellHasConflict =
-                                            conflicts.cells.includes(
-                                                cellNumber
-                                            );
-                                        const cellClasses = `${styles.cell} ${
-                                            cellRowHasConflict ||
-                                            cellColHasConflict
-                                                ? styles["red-bordered-cell"]
-                                                : null
-                                        } ${
-                                            cellHasConflict
-                                                ? styles["conflicted-cell"]
-                                                : null
-                                        }`;
-                                        return (
-                                            <input
-                                                key={cellId}
-                                                id={cellId}
-                                                className={cellClasses}
-                                                type="text"
-                                                autoComplete="off"
-                                                value={cell}
-                                                onChange={cellChangeHandler}
-                                            />
-                                        );
-                                    })}
-                                </div>
+                                    region={region}
+                                    classes={regionClasses}
+                                    conflicts={conflicts}
+                                    onCellChange={cellChangeHandler}
+                                />
                             );
                         })}
                     </div>

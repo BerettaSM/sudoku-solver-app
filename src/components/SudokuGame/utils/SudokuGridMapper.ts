@@ -44,7 +44,18 @@ class SudokuGridMapper {
         );
     };
 
-    static extractRegionsFromGrid = (grid: SudokuGrid) => {
+    static extractRegionFromGrid = (grid: SudokuGrid, cellRow: number, cellCol: number) => {
+        const region: SudokuCell[] = [];
+        const indices = this.findRegionIndexes(cellRow, cellCol);
+        indices.rows.forEach(row => {
+            indices.cols.forEach(col => {
+                region.push(grid[row][col]);
+            })
+        })
+        return region;
+    }
+
+    static extractAllRegionsFromGrid = (grid: SudokuGrid) => {
         const mappedRegions: [SudokuCell, number, number][][][] = [
             ...Array(3),
         ].map(() => [...Array(3)].map(() => []));
