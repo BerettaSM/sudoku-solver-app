@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import SudokuGrid from "../models/SudokuGrid";
-import SudokuCell from "../models/SudokuCell";
-import Mapper from "../utils/SudokuGridMapper";
+import { SudokuCell, SudokuGrid } from "../models/Sudoku";
 import Solver from "../utils/SudokuSolver";
 import { getClearGrid } from "../utils/utilities";
 import { Conflicts, getConflictsObject } from "../models/Conflicts";
@@ -12,27 +10,10 @@ const useSudoku = () => {
 
     const [conflicts, setConflicts] = useState<Conflicts>(getConflictsObject());
 
-    const updateConflicts = (
-        grid: SudokuGrid,
-        rowNumber: number,
-        colNumber: number
-    ) => {
-        const regionIndex = Mapper.findRegionIndex(rowNumber, colNumber);
-        const newConflicts = Solver.getConflicts(grid, rowNumber, colNumber);
-        const updatedConflicts: Conflicts = {
-            rows: conflicts.rows.map((row) => [...row]),
-            cols: conflicts.cols.map((col) => [...col]),
-            regions: conflicts.regions.map((region) => [...region]),
-            cells: conflicts.cells.map((cell) => [...cell]),
-        };
-        updatedConflicts.rows[rowNumber] = newConflicts.row;
-        updatedConflicts.cols[colNumber] = newConflicts.col;
-        updatedConflicts.regions[regionIndex] = newConflicts.region;
-
-        console.log(updatedConflicts)
-
+    useEffect(() => {
+        const updatedConflicts = Solver.getConflicts(grid);
         setConflicts(updatedConflicts);
-    };
+    }, [grid])
 
     const changeCell = (
         newCellValue: SudokuCell,
@@ -42,9 +23,6 @@ const useSudoku = () => {
         setGrid((prevGrid) => {
             const updatedGrid = prevGrid.map((row) => [...row]);
             updatedGrid[rowNumber][colNumber] = newCellValue;
-            
-            updateConflicts(updatedGrid, rowNumber, colNumber);
-
             return updatedGrid;
         });
     };
@@ -53,12 +31,21 @@ const useSudoku = () => {
         setGrid(getClearGrid());
         setConflicts(getConflictsObject());
     };
-    
+
+    const isSolvable = Object.entries(conflicts).reduce((isSolvable, [key, arr]) => {
+        if(key === 'regions') {
+            return (arr as number[][]).every(a => a.length === 0) && isSolvable;
+        } else {
+            return arr.length === 0 && isSolvable;
+        }
+    }, true);
+
     return {
         grid,
         conflicts,
         changeCell,
         clearGrid,
+        isSolvable
     };
 };
 

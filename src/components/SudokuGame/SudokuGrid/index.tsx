@@ -1,12 +1,11 @@
 import React, { memo } from "react";
 import styles from "./index.module.css";
 
-import SudokuGridModel from "../models/SudokuGrid";
-import SudokuCell from "../models/SudokuCell";
+import { SudokuCell, SudokuGrid as SudokuGridModel } from "../models/Sudoku";
+import { Conflicts } from "../models/Conflicts";
 
 import { validCellValues } from "../utils/utilities";
 import Mapper from "../utils/SudokuGridMapper";
-import { Conflicts } from "../models/Conflicts";
 
 const SudokuGrid: React.FC<{
     grid: SudokuGridModel;
@@ -24,13 +23,11 @@ const SudokuGrid: React.FC<{
         onCellChange(value, cellRow, cellCol);
     };
 
-    // const sudokuGridBody = () => {
+    /*
+        Mainly so regions can be grouped in separate divs and styled.
+    */
+    const fullGrid = Mapper.extractRegionsFromGrid(grid);
 
-    //     //console.log(fullGrid);
-    //     return <></>;
-    // };
-
-    const fullGrid = Mapper.divideIntoRegions(grid);
     return (
         <div className={styles["sudoku-grid"]}>
             {fullGrid.map((regionRow, regionRowIndex) => {
@@ -39,11 +36,12 @@ const SudokuGrid: React.FC<{
                         key={`region-row-${regionRowIndex}`}
                         className={styles["region-row"]}
                     >
-                        {regionRow.map((region, regionIndex) => {
-                            const regionNumber =
-                                regionRowIndex * 3 + regionIndex;
+                        {regionRow.map((region, regionColIndex) => {
+                            const regionId = `${regionRowIndex}${regionColIndex}`;
                             const regionHasConflict =
-                                conflicts.regions[regionNumber].length !== 0;
+                                conflicts.regions[regionRowIndex].includes(
+                                    regionColIndex
+                                );
                             const regionClasses = `${styles.region} ${
                                 regionHasConflict
                                     ? styles["conflicted-region"]
@@ -51,19 +49,28 @@ const SudokuGrid: React.FC<{
                             }`;
                             return (
                                 <div
-                                    key={`region-${regionNumber}`}
+                                    key={`region-${regionId}`}
                                     className={regionClasses}
                                 >
                                     {region.map(([cell, row, col]) => {
-                                        const cellId = `rc-${row}${col}`;
+                                        const cellNumber = `${row}${col}`;
+                                        const cellId = `rc-${cellNumber}`;
                                         const cellRowHasConflict =
-                                            conflicts.rows[row].length !== 0;
+                                            conflicts.rows.includes(row);
                                         const cellColHasConflict =
-                                            conflicts.cols[col].length !== 0;
+                                            conflicts.cols.includes(col);
+                                        const cellHasConflict =
+                                            conflicts.cells.includes(
+                                                cellNumber
+                                            );
                                         const cellClasses = `${styles.cell} ${
                                             cellRowHasConflict ||
                                             cellColHasConflict
                                                 ? styles["red-bordered-cell"]
+                                                : null
+                                        } ${
+                                            cellHasConflict
+                                                ? styles["conflicted-cell"]
                                                 : null
                                         }`;
                                         return (

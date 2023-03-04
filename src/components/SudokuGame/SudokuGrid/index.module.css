@@ -19,6 +19,8 @@
 
 .conflicted-region {
     border: 2px solid red;
+    transform: scale(1.1);
+    z-index: 2;
 }
 
 input.cell {
@@ -32,6 +34,15 @@ input.cell {
     outline: none;
 }
 
+input.conflicted-cell {
+    color: red;
+}
+
+.conflicted-region input,
 input.red-bordered-cell {
     border: solid 1px red;
+}
+
+:not(.conflicted-region) > input.red-bordered-cell {
+    border-width: 2px;
 }

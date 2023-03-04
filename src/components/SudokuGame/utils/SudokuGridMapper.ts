@@ -1,5 +1,4 @@
-import SudokuCell from "../models/SudokuCell";
-import SudokuGrid from "../models/SudokuGrid";
+import { SudokuCell, SudokuGrid } from "../models/Sudoku";
 
 class SudokuGridMapper {
     /* 
@@ -20,7 +19,11 @@ class SudokuGridMapper {
         return this.findRegionRow(cellColumn);
     };
 
-    static getRegionIndexes = (rowNumber: number, colNumber: number) => {
+    static findRegionRowAndCol = (cellRow: number, cellCol: number) => {
+        return [this.findRegionRow(cellRow), this.findRegionCol(cellCol)];
+    };
+
+    static findRegionIndexes = (rowNumber: number, colNumber: number) => {
         const regionRow = this.findRegionRow(rowNumber);
         const regionCol = this.findRegionCol(colNumber);
         const region: { rows: number[]; cols: number[] } = {
@@ -34,12 +37,6 @@ class SudokuGridMapper {
         return region;
     };
 
-    static findRegionIndex = (cellRow: number, cellCol: number) => {
-        const regionRow = this.findRegionRow(cellRow);
-        const regionCol = this.findRegionCol(cellCol);
-        return regionRow * 3 + regionCol;
-    };
-
     static extractColumnFromGrid = (grid: SudokuGrid, colNumber: number) => {
         return grid.reduce(
             (column, currentRow) => [...column, currentRow[colNumber]],
@@ -47,37 +44,29 @@ class SudokuGridMapper {
         );
     };
 
-    static extractRegionFromGrid = (
-        grid: SudokuGrid,
-        rowNumber: number,
-        colNumber: number
-    ) => {
-        const region: SudokuCell[] = [];
-        const { rows, cols } = this.getRegionIndexes(rowNumber, colNumber);
-        rows.forEach((row) => {
-            cols.forEach((col) => {
-                region.push(grid[row][col]);
-            });
-        });
-        return region;
-    };
+    static extractRegionsFromGrid = (grid: SudokuGrid) => {
+        const mappedRegions: [SudokuCell, number, number][][][] = [
+            ...Array(3),
+        ].map(() => [...Array(3)].map(() => []));
 
-    static divideIntoRegions = (grid: SudokuGrid) => {
-        const regions: [SudokuCell, number, number][][][] = [...Array(3)].map(
-            (_) => [[], [], []]
-        );
-        grid.forEach((row, rowIndex) => {
-            row.forEach((cellValue, colIndex) => {
-                const regionRow = this.findRegionRow(rowIndex);
-                const regionCol = this.findRegionCol(colIndex);
-                regions[regionRow][regionCol].push([
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const [regionRow, regionCol] = this.findRegionRowAndCol(
+                    row,
+                    col
+                );
+
+                const cellValue = grid[row][col];
+                const cellInfo: [SudokuCell, number, number] = [
                     cellValue,
-                    rowIndex,
-                    colIndex,
-                ]);
-            });
-        });
-        return regions;
+                    row,
+                    col,
+                ];
+                mappedRegions[regionRow][regionCol].push(cellInfo);
+            }
+        }
+
+        return mappedRegions;
     };
 }
 

@@ -1,5 +1,4 @@
-import SudokuGrid from "../models/SudokuGrid";
-import SudokuCell from "../models/SudokuCell";
+import { SudokuCell, SudokuGrid } from "../models/Sudoku";
 
 export const getClearGrid = (): SudokuGrid => Array(9).fill(Array(9).fill(""));
 
