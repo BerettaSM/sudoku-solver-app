@@ -1,25 +1,26 @@
 import { useState, useEffect } from "react";
 
-import { SudokuCell, SudokuGrid } from "../models/Sudoku";
-import { Conflicts, getConflictsObject } from "../models/Conflicts";
+import { SudokuCell, CellRow, CellCol } from "../models/Sudoku";
+import { Conflicts } from "../models/Sudoku";
 
+import Validator from "../utils/SudokuValidator";
 import Solver from "../utils/SudokuSolver";
-import { getClearGrid } from "../utils/utilities";
+import { getClearGrid, getConflictsObject } from "../utils/utilities";
 
 const useSudoku = () => {
-    const [grid, setGrid] = useState<SudokuGrid>(getClearGrid());
-
+    const [grid, setGrid] = useState(getClearGrid());
     const [conflicts, setConflicts] = useState<Conflicts>(getConflictsObject());
+    const [calculating, setCalculating] = useState(false);
 
     useEffect(() => {
-        const updatedConflicts = Solver.getAllConflicts(grid);
+        const updatedConflicts = Validator.getAllConflicts(grid);
         setConflicts(updatedConflicts);
-    }, [grid])
+    }, [grid]);
 
     const changeCell = (
         newCellValue: SudokuCell,
-        rowNumber: number,
-        colNumber: number
+        rowNumber: CellRow,
+        colNumber: CellCol
     ) => {
         setGrid((prevGrid) => {
             const updatedGrid = prevGrid.map((row) => [...row]);
@@ -33,20 +34,40 @@ const useSudoku = () => {
         setConflicts(getConflictsObject());
     };
 
-    const solvePuzzle = () => {
-        const solution = Solver.solve(grid);
-        setGrid(solution);
-    }
+    const generatePuzzle = () => {
+        const puzzle = Solver.generatePartialPuzzle(26);
+        setGrid(puzzle);
+    };
 
-    const isSolvable = !Solver.puzzleHasConflicts(conflicts) && !Solver.isGridFullySet(grid);
-    
+    const solvePuzzle = async () => {
+        setCalculating(true);
+
+        Solver.solve(grid)
+            .then((solution) => {
+                setGrid(solution);
+            })
+            .catch((failure) => {
+                alert(failure);
+            })
+            .finally(() => {
+                setCalculating(false);
+            });
+
+    };
+
+    const isSolvable =
+        !Validator.puzzleHasAnyConflict(conflicts) &&
+        Validator.findEmptyCell(grid) !== null;
+
     return {
         grid,
         conflicts,
         changeCell,
         clearGrid,
+        generatePuzzle,
         solvePuzzle,
-        isSolvable
+        calculating,
+        isSolvable,
     };
 };
 

@@ -3,25 +3,25 @@ import styles from "./index.module.css";
 
 import SudokuRegion from "./SudokuRegion";
 
-import { SudokuCell, SudokuGrid as SudokuGridModel } from "../models/Sudoku";
-import { Conflicts } from "../models/Conflicts";
+import { CellCol, CellRow, RegionCol, SudokuCell, SudokuGrid as SudokuGridModel } from "../models/Sudoku";
+import { Conflicts } from "../models/Sudoku";
 
 import { validCellValues } from "../utils/utilities";
-import Mapper from "../utils/SudokuGridMapper";
+import Mapper from "../utils/SudokuMapper";
 
 const SudokuGrid: React.FC<{
     grid: SudokuGridModel;
     conflicts: Conflicts;
-    onCellChange: (newCellValue: SudokuCell, row: number, col: number) => void;
+    onCellChange: (newCellValue: SudokuCell, row: CellRow, col: CellCol) => void;
 }> = ({ grid, conflicts, onCellChange }) => {
     const cellChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value as SudokuCell;
-        if (!validCellValues.includes(value) && value !== '') {
+        if (!validCellValues.includes(value) && value !== "") {
             return;
         }
         const cellId = event.target.id;
-        const cellRow = +cellId[3];
-        const cellCol = +cellId[4];
+        const cellRow = +cellId[3] as CellRow;
+        const cellCol = +cellId[4] as CellCol;
         onCellChange(value, cellRow, cellCol);
     };
 
@@ -42,7 +42,7 @@ const SudokuGrid: React.FC<{
                             const regionId = `${regionRowIndex}${regionColIndex}`;
                             const regionHasConflict =
                                 conflicts.regions[regionRowIndex].includes(
-                                    regionColIndex
+                                    regionColIndex as RegionCol
                                 );
                             const regionClasses = `${styles.region} ${
                                 regionHasConflict

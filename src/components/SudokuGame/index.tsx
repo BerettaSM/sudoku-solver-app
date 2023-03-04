@@ -4,12 +4,20 @@ import SudokuGrid from "./SudokuGrid";
 import useSudoku from "./hooks/use-sudoku";
 
 const SudokuGame: React.FC = () => {
-    const { grid, conflicts, changeCell, clearGrid, solvePuzzle, isSolvable } =
-        useSudoku();
+    const {
+        grid,
+        conflicts,
+        changeCell,
+        clearGrid,
+        generatePuzzle,
+        solvePuzzle,
+        calculating,
+        isSolvable,
+    } = useSudoku();
 
     return (
         <div>
-            <h3>Sudoku Solver</h3>
+            <h3>Sudoku Solver{calculating && <> : Loading...</>}</h3>
             <SudokuGrid
                 grid={grid}
                 conflicts={conflicts}
@@ -18,11 +26,12 @@ const SudokuGame: React.FC = () => {
 
             <button onClick={clearGrid}>Clear</button>
             <br />
-            <button>Generate</button>
+            <button onClick={generatePuzzle}>Generate</button>
             <br />
-            <button disabled={!isSolvable} onClick={solvePuzzle}>Solve puzzle</button>
+            <button disabled={!isSolvable} onClick={solvePuzzle}>
+                Solve puzzle
+            </button>
             <br />
-            {/* Game must be evaluated for conflicts after every input */}
         </div>
     );
 };
