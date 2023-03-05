@@ -12,18 +12,6 @@ export const getClearGrid = (): SudokuGrid =>
 
 export const copyGrid = (grid: SudokuGrid) => grid.map((row) => [...row]);
 
-export const findEmptyPositions = (grid: SudokuGrid) => {
-    const emptyPositions: [CellRow, CellCol][] = [];
-    for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-            if (grid[row][col] === "") {
-                emptyPositions.push([row as CellRow, col as CellCol]);
-            }
-        }
-    }
-    return emptyPositions;
-};
-
 export const validCellValues: SudokuCell[] = [
     "1",
     "2",

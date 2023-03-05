@@ -6,6 +6,7 @@ import {
     getRandomCellValue,
     getRandomGridLocation,
 } from "./utilities";
+
 import Validator from "./SudokuValidator";
 
 class SudokuSolver {
@@ -25,7 +26,8 @@ class SudokuSolver {
     };
 
     static solve = async (grid: SudokuGrid): Promise<SudokuGrid> => {
-        const MAX_CALLS = 300000;
+
+        const MAX_CALLS = 3500000;
         let calls = 0;
 
         const copy = copyGrid(grid);
@@ -54,7 +56,7 @@ class SudokuSolver {
         return new Promise((resolve, reject) => {
             const [solution] = _solve(copy);
             const solved = Validator.findEmptyCell(solution) === null;
-            if (calls > MAX_CALLS) reject("Puzzle is taking too long.");
+            if (calls > MAX_CALLS) reject("Puzzle is taking too long. Aborting...");
             if (!solved) reject("Puzzle cannot be solved.");
             resolve(solution);
         });

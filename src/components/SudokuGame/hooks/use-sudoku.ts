@@ -11,11 +11,21 @@ const useSudoku = () => {
     const [grid, setGrid] = useState(getClearGrid());
     const [conflicts, setConflicts] = useState<Conflicts>(getConflictsObject());
     const [calculating, setCalculating] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         const updatedConflicts = Validator.getAllConflicts(grid);
         setConflicts(updatedConflicts);
     }, [grid]);
+
+    useEffect(() => {
+        if(message === '') return;
+        const time = 3500;
+        const messageTimeout = setTimeout(() => {
+            setMessage('');
+        }, time)
+        return () => clearTimeout(messageTimeout);
+    }, [message]);
 
     const changeCell = (
         newCellValue: SudokuCell,
@@ -30,29 +40,37 @@ const useSudoku = () => {
     };
 
     const clearGrid = () => {
+        setMessage('');
         setGrid(getClearGrid());
         setConflicts(getConflictsObject());
     };
 
     const generatePuzzle = () => {
-        const puzzle = Solver.generatePartialPuzzle(26);
+        setMessage('');
+        const puzzle = Solver.generatePartialPuzzle(27);
         setGrid(puzzle);
     };
 
     const solvePuzzle = async () => {
+        setMessage('');
         setCalculating(true);
 
-        Solver.solve(grid)
-            .then((solution) => {
-                setGrid(solution);
-            })
-            .catch((failure) => {
-                alert(failure);
-            })
-            .finally(() => {
-                setCalculating(false);
-            });
-
+        setTimeout(() => {
+            /*
+                Timeout so the GUI can actually update before being
+                momentarily blocked.
+            */
+            Solver.solve(grid)
+                .then((solution) => {
+                    setGrid(solution);
+                })
+                .catch((failure) => {
+                    setMessage(failure);
+                })
+                .finally(() => {
+                    setCalculating(false);
+                });
+        }, 100);
     };
 
     const isSolvable =
@@ -68,6 +86,7 @@ const useSudoku = () => {
         solvePuzzle,
         calculating,
         isSolvable,
+        message,
     };
 };
 

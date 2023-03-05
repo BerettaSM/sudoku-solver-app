@@ -1,0 +1,64 @@
+@charset "UTF-8";
+
+.sudoku-game h3,
+.sudoku-game h5 {
+    text-align: center;
+}
+
+.sudoku-game h3 {
+    font-size: 2rem;
+}
+
+.sudoku-game h5 {
+    font-size: 1.2rem;
+}
+
+h5.message {
+    color: red;
+}
+
+.sudoku-game > * {
+    margin: 1rem;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 3rem;
+}
+
+.actions > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.actions button {
+    background-color: white;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all .7s;
+}
+
+.actions button:hover:not(:disabled) {
+    color: white;
+    background-color: rgb(39, 37, 37);
+}
+
+.actions button:disabled {
+    cursor:not-allowed;
+}
+
+.actions > button {
+    position: relative;
+    width: 5rem;
+    height: 9.3rem;
+}
+
+.actions > div button {
+    margin: 10px 0;
+    height: 4rem;
+    width: 10rem;
+}
