@@ -1,6 +1,6 @@
 import styles from "../index.module.css";
 
-import {  Conflicts, CellInfo, CellId } from "../../models/Sudoku";
+import { Conflicts, CellInfo, CellId } from "../../models/Sudoku";
 
 const SudokuRegion: React.FC<{
     region: CellInfo[];
@@ -15,7 +15,9 @@ const SudokuRegion: React.FC<{
                 const cellId = `rc-${cellNumber}`;
                 const cellRowHasConflict = conflicts.rows.includes(row);
                 const cellColHasConflict = conflicts.cols.includes(col);
-                const cellHasConflict = conflicts.cells.includes(cellNumber as CellId);
+                const cellHasConflict = conflicts.cells.includes(
+                    cellNumber as CellId
+                );
                 const cellClasses = `${styles.cell} ${
                     cellRowHasConflict || cellColHasConflict
                         ? styles["red-bordered-cell"]

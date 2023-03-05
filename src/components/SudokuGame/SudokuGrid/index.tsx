@@ -3,7 +3,13 @@ import styles from "./index.module.css";
 
 import SudokuRegion from "./SudokuRegion";
 
-import { CellCol, CellRow, RegionCol, SudokuCell, SudokuGrid as SudokuGridModel } from "../models/Sudoku";
+import {
+    CellCol,
+    CellRow,
+    RegionCol,
+    SudokuCell,
+    SudokuGrid as SudokuGridModel,
+} from "../models/Sudoku";
 import { Conflicts } from "../models/Sudoku";
 
 import { validCellValues } from "../utils/utilities";
@@ -12,7 +18,11 @@ import Mapper from "../utils/SudokuMapper";
 const SudokuGrid: React.FC<{
     grid: SudokuGridModel;
     conflicts: Conflicts;
-    onCellChange: (newCellValue: SudokuCell, row: CellRow, col: CellCol) => void;
+    onCellChange: (
+        newCellValue: SudokuCell,
+        row: CellRow,
+        col: CellCol
+    ) => void;
 }> = ({ grid, conflicts, onCellChange }) => {
     const cellChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value as SudokuCell;
@@ -40,10 +50,9 @@ const SudokuGrid: React.FC<{
                     >
                         {regionRow.map((region, regionColIndex) => {
                             const regionId = `${regionRowIndex}${regionColIndex}`;
-                            const regionHasConflict =
-                                conflicts.regions[regionRowIndex].includes(
-                                    regionColIndex as RegionCol
-                                );
+                            const regionHasConflict = conflicts.regions[
+                                regionRowIndex
+                            ].includes(regionColIndex as RegionCol);
                             const regionClasses = `${styles.region} ${
                                 regionHasConflict
                                     ? styles["conflicted-region"]

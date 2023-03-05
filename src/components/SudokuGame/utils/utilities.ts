@@ -35,6 +35,10 @@ export const getRandomGridLocation = (): [CellRow, CellCol] => {
     return [row as CellRow, col as CellCol];
 };
 
+export const getTimestamp = () => {
+    return Math.floor(Date.now() / 1000);
+};
+
 export const getConflictsObject = (): Conflicts => ({
     rows: [],
     cols: [],

@@ -11,7 +11,7 @@ const useSudoku = () => {
     const [grid, setGrid] = useState(getClearGrid());
     const [conflicts, setConflicts] = useState<Conflicts>(getConflictsObject());
     const [calculating, setCalculating] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         const updatedConflicts = Validator.getAllConflicts(grid);
@@ -19,11 +19,11 @@ const useSudoku = () => {
     }, [grid]);
 
     useEffect(() => {
-        if(message === '') return;
+        if (message === "") return;
         const time = 3500;
         const messageTimeout = setTimeout(() => {
-            setMessage('');
-        }, time)
+            setMessage("");
+        }, time);
         return () => clearTimeout(messageTimeout);
     }, [message]);
 
@@ -40,19 +40,19 @@ const useSudoku = () => {
     };
 
     const clearGrid = () => {
-        setMessage('');
+        setMessage("");
         setGrid(getClearGrid());
         setConflicts(getConflictsObject());
     };
 
     const generatePuzzle = () => {
-        setMessage('');
+        setMessage("");
         const puzzle = Solver.generatePartialPuzzle(27);
         setGrid(puzzle);
     };
 
     const solvePuzzle = async () => {
-        setMessage('');
+        setMessage("");
         setCalculating(true);
 
         setTimeout(() => {

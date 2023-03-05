@@ -5,6 +5,7 @@ import {
     getClearGrid,
     getRandomCellValue,
     getRandomGridLocation,
+    getTimestamp,
 } from "./utilities";
 
 import Validator from "./SudokuValidator";
@@ -26,11 +27,17 @@ class SudokuSolver {
     };
 
     static solve = async (grid: SudokuGrid): Promise<SudokuGrid> => {
-
-        const MAX_CALLS = 3500000;
-        let calls = 0;
+        const startTimestamp = getTimestamp();
+        const timeoutInSeconds = 5;
+        let isTimedOut = false;
 
         const copy = copyGrid(grid);
+
+        const updateTimeout = () => {
+            if (getTimestamp() > startTimestamp + timeoutInSeconds) {
+                isTimedOut = true;
+            }
+        };
 
         const _solve = (grid: SudokuGrid): [SudokuGrid, ShouldReturn] => {
             const emptyCell = Validator.findEmptyCell(grid);
@@ -42,9 +49,9 @@ class SudokuSolver {
             for (const cellValue of possibleValues) {
                 grid[row][col] = cellValue;
                 if (!Validator.cellHasAdjacentConflict(grid, row, col)) {
-                    calls++;
                     const [gridPermutation, shouldReturn] = _solve(grid);
-                    if (shouldReturn || calls > MAX_CALLS) {
+                    updateTimeout();
+                    if (shouldReturn || isTimedOut) {
                         return [gridPermutation, true];
                     }
                 }
@@ -56,7 +63,7 @@ class SudokuSolver {
         return new Promise((resolve, reject) => {
             const [solution] = _solve(copy);
             const solved = Validator.findEmptyCell(solution) === null;
-            if (calls > MAX_CALLS) reject("Puzzle is taking too long. Aborting...");
+            if (isTimedOut) reject("Puzzle is taking too long. Aborting...");
             if (!solved) reject("Puzzle cannot be solved.");
             resolve(solution);
         });

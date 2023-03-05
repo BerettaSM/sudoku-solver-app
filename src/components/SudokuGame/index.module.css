@@ -1,24 +1,12 @@
 @charset "UTF-8";
 
-.sudoku-game h3,
-.sudoku-game h5 {
-    text-align: center;
+.sudoku-game > * {
+    margin: 1rem;
 }
 
 .sudoku-game h3 {
+    text-align: center;
     font-size: 2rem;
-}
-
-.sudoku-game h5 {
-    font-size: 1.2rem;
-}
-
-h5.message {
-    color: red;
-}
-
-.sudoku-game > * {
-    margin: 1rem;
 }
 
 .actions {

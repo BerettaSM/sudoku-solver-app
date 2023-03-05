@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+h3.title {
+    overflow: hidden;
+}
+
+.title span:first-child {
+    display: inline-block;
+    position: absolute;
+}
+
+.title span:last-child {
+    display: inline-block;
+}

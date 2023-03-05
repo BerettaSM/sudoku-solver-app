@@ -1,0 +1,12 @@
+@charset "UTF-8";
+
+.message {
+    text-align: center;
+    font-size: 1.2rem;
+    color: red;
+    overflow: hidden;
+}
+
+.message > span {
+    display: inline-block;
+}

@@ -1,13 +1,14 @@
-import React, { useEffect} from "react";
+import React from "react";
 
 import styles from "./index.module.css";
 
 import SudokuGrid from "./SudokuGrid";
 import useSudoku from "./hooks/use-sudoku";
 import Spinner from "../Spinner";
+import Title from "../Title";
+import Message from "../Message";
 
 const SudokuGame: React.FC = () => {
-
     const {
         calculating,
         changeCell,
@@ -22,8 +23,8 @@ const SudokuGame: React.FC = () => {
 
     return (
         <div className={styles["sudoku-game"]}>
-            <h3>Sudoku Solver</h3>
-            {message !== '' && <h5 className={styles.message}>{message}</h5>}
+            <Title />
+            <Message message={message} />
             <SudokuGrid
                 grid={grid}
                 conflicts={conflicts}
@@ -42,8 +43,13 @@ const SudokuGame: React.FC = () => {
                     disabled={!isSolvable || calculating}
                     onClick={solvePuzzle}
                 >
-                    {calculating && <Spinner />}
-                    {!calculating && <>Solve</>}
+                    {calculating ? (
+                        <Spinner />
+                    ) : !isSolvable ? (
+                        <>...</>
+                    ) : (
+                        <>Solve</>
+                    )}
                 </button>
             </div>
         </div>
