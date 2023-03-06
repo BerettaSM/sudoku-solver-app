@@ -1,7 +1,9 @@
 @charset "UTF-8";
 
-@media only screen and (max-width: 768px) {
-    .app {
-        margin-top: -3rem;
-    }
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
